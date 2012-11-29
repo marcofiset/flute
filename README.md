@@ -1,4 +1,4 @@
-phpluent-validation
+PHPluentValidation
 ===================
 
-A fluent interface for object validation in PHP
+A fluent validation framework for PHP.
