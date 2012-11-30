@@ -39,6 +39,15 @@ $v->validate($obj); // => false
 ```
 This validator will check for function `this_is_getting_long()` on the target object and pass it through the rules defined for this particular function.
 
-### TODO:
+### On its way :
 
- - Some refactoring (having the prop inside each rule is kinda bad)
+ - Unit testing!
+ - Refactoring to remove unnecessary `$prop` property inside each rule.
+ - Support for the same ruleset for different properties defined like this :
+
+```php
+//This way, both first_name and last_name will have the required and the max_length rules
+$validator->rule_for('first_name')->and_for('last_name')
+          ->required()
+          ->max_length(100);
+```
