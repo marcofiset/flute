@@ -4,14 +4,14 @@ PHPluentValidation
 ### An utterly awesome and easy-to-use highly-extensible lightweight fluent validation framework for PHP.
 *I really wish I could pack more adjectives into this description, but that's the best I was able to come up with*.
 
-#### BEWARE! My TDD-fu failed me while developping this project! Proceed with care. Maybe some velociraptor is lurking around the corner.
+#### BEWARE! Maybe some velociraptor is lurking around the corner! My TDD-fu failed me while developping this project. Proceed with care through these untested realms.
 
 These not-so-cool validation rules are supported out of the box :
 
  - NotNull (not null)
  - Required (not null or empty)
  - MaxLength 
- - ... (Kind of boring, I know. More to come.)
+ - ... (Kind of boring, I know. More to come. OR WRITE SOME YOURSELF! PFFT! :japanese_goblin:)
 
 It's a so tiny piece of delicious carrot cake to create custom rules that even your annoying sister's three-legged incapable kitty cat can do it eyes shut while itching its back :
 
