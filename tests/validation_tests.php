@@ -10,11 +10,15 @@ class TestObject
 {
 	private $values = [];
 	
-	public function get($name) {
+	public function __get($name) {
 		return $this->values[$name];
 	}
 
-	public function set($name, $value) {
+	public function __call($name, $args) {
+		return $this->__get($name);
+	}
+
+	public function __set($name, $value) {
 		$this->values[$name] = $value;
 	}
 }
@@ -30,19 +34,42 @@ class AlwaysValidRule
 
 $tf = new Testify('PHPluent Validation Tests');
 
-$tf->beforeEach(function($tf) {
-	$tf->data->validator = new Validator();
-});
-
-$tf->test('Parameterless Rule', function($tf) {
+$tf->test('Parameter-less Rule', function($tf) {
 	$obj = new TestObject();
 	$obj->name = 'Test Object';
 
-	$validator = $tf->data->validator;
+	$validator = new Validator();
 	$validator->rule_for('name')->always_valid();
 
 	$result = $validator->validate($obj);	
 	$tf->assert($result, 'Object should be valid');
+});
+
+$tf->test('Rule for multiple fields', function($tf) {
+	$validator = new Validator();
+	$validator->rule_for('first_name')->and_for('last_name')
+			->required();
+
+	$obj = new TestObject();
+	$obj->first_name = '';
+	$obj->last_name = 'Valid name';
+
+	$tf->assertFalse($validator->validate($obj), 'One property is invalid');
+
+	$obj->first_name = 'Valid name';
+	$tf->assert($validator->validate($obj), 'All properties are valid.');
+});
+
+$tf->test('Parameter rule', function($tf) {
+	$validator = new Validator();
+	$validator->rule_for('name')->max_length(10);
+
+	$obj = new TestObject();
+	$obj->name = '0123456789';
+	$tf->assert($validator->validate($obj), 'Rule respected');
+
+	$obj->name .= '0';
+	$tf->assertFalse($validator->validate($obj), 'Rule infringed');
 });
 
 $tf->run();

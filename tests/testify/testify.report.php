@@ -86,7 +86,7 @@
         	ul{
         		list-style:none;
         		font-size:19px;
-        		width: 430px;
+        		width: 800px;
         		margin: 10px auto 80px;
         	}
         	
@@ -223,7 +223,7 @@
 		  		
 	  	</div>
 	  	
-        <footer> Powered by <a href="http://tutorialzine.com/projects/testify/">Testify</a> framework</footer>
+        <footer> Powered by <a href="http://tutorialzine.com/projects/testify/" target="_blank">Testify</a> framework</footer>
         
     </body>
 </html>
