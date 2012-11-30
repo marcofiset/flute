@@ -42,6 +42,7 @@ This validator will check for function `this_is_getting_long()` on the target ob
 ### On its way :
 
  - More unit tests!
+ - Autoloader for Validator, Rule trait and already supported rules (so you don't have to require every file)
  - Refactoring to remove unnecessary `$prop` property inside each rule.
  - Support for the same ruleset for different properties defined like this :
 
