@@ -11,18 +11,20 @@ These not-so-cool validation rules are supported out of the box :
  - NotNull (not null)
  - Required (not null or empty)
  - MaxLength 
- - ... (Kind of boring, I know. More to come. OR WRITE SOME YOURSELF! PFFT! :japanese_goblin:)
+ - ... (Kind of boring, I know. More to come. OR WRITE SOME YOURSELF! PFFT! :japanese_goblin: (failed attempt at finding a furious guy in the emoji collection))
 
 It's a so tiny piece of delicious carrot cake to create custom rules that even your annoying sister's three-legged incapable kitty cat can do it eyes shut while itching its back :
 
 ```php
-class WorldShouldHaveEndedRule
+class WorldShouldHaveEndedRule extends Rule //You must extend the Rule abstract class.
 {
-	//Use the Rule trait. 
-	//Or maybe it's an abstract class? 
-	//Really, who gives a shit about this? 
-	//Just use/extend it the right way. 
+	//You must use the Rule trait. 
 	use Rule; 
+	
+	//Wasn't Rule supposed to be an abstract class?
+	//Hmmm... Thought it was a trait.
+	//Really, who gives a shit about this? 
+	//Just check the source to figure it out.
 	
 	/**
 	 * Mandatory validate function with some useless description that don't mean anything.
@@ -30,9 +32,9 @@ class WorldShouldHaveEndedRule
 	 */
 	public function validate($value)
 	{
-		return has_the_world_ended_yet(); // I really hope this returns true some day.
+		return MayanShaman::has_the_world_ended_yet(); // I really hope this returns true some day.
 
-		//Why doesn't PHP support question markrs in identifiers?
+		//Why doesn't PHP support question marks in identifiers?
 		//This apocalyptic function name would be sooooo much cooler, like it's asking a question LOL!
 	}
 }
