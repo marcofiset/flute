@@ -71,6 +71,10 @@ class Validator
 	}
 }
 
+/**
+ * This is a trait that represents a Rule. Provides a default constructor
+ * with $prop and $args property. User defined rules should use this trait.
+ */
 trait Rule
 {
 	private $prop = '';
@@ -123,17 +127,3 @@ class MaxLengthRule
 		return strlen($value) <= $this->max_length();
 	}
 }
-
-class TestObject
-{
-	private $name = '012345678901234567';
-	public function get_name()
-	{
-		return $this->name;
-	}
-}
-
-$v = new Validator();
-$v->rule_for('get_name')->required()->max_length(18);
-
-echo $v->validate(new TestObject()) ? 'true' : 'false';
