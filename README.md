@@ -36,9 +36,9 @@ class WorldShouldHaveEndedRule
 		//This apocalyptic function name would be sooooo much cooler, like it's asking a question LOL!
 	}
 }
-```
 
-WOW! This really looked like me using Ruby naming conventions in PHP :3
+//WOW! That really looked like me using Ruby naming conventions in PHP :3
+```
 
 Your class must be discoverable by any registered autoloader (shame on you if you still use an old-(school/fashioned) out-of-date cheese-smelling `__autoload` function), and voilà! Now **YOU** figure out how to use it. Nah, just kidding, here it goes :
 
@@ -53,9 +53,11 @@ $v->validate($obj); // => false
 
 This validator will check for function `dont_you_know_how_to_use_this_already()` on the target object and pass it through the rules defined for this particular function.
 
-Phew! I hope you were able to decipher how this magic thing does it.
+Phew!
 
 # OK BRAIN FART IS OVER
+
+No really, this is a real and serious project! I will put some real documentation with real examples in the real Wiki when I really feel like it. Really? Yeah, really.
 
 ### Features to come :
 
