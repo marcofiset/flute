@@ -1,10 +1,9 @@
 PHPluentValidation
 ===================
 
-A ~~magic!~~ highly-extensible lightweight fluent validation framework for PHP.
--------------------------------------------------------------------
+### A ~~magic!~~ highly-extensible lightweight fluent validation framework for PHP.
 
-### BEWARE! This has not been tested rigorously yet! Not sure if it all works fine.
+#### BEWARE! This has not been tested rigorously yet! Not sure if it all works fine.
 
 These validation rules are supported out of the box :
 
