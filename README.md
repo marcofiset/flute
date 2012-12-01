@@ -8,8 +8,9 @@ PHPluentValidation
 
 These not-so-cool validation rules are supported out of the box :
 
- - NotNull (not null)
- - Required (not null or empty)
+ - NotNull
+ - NotEmpty 
+ - Required (extends NotNull and NotEmpty)
  - MaxLength 
  - ... (Kind of boring, I know. More to come. OR WRITE SOME YOURSELF! PFFT! :japanese_goblin: (failed attempt at finding a furious guy in the emoji collection))
 
@@ -27,19 +28,28 @@ class WorldShouldHaveEndedRule extends Rule //You must extend the Rule abstract 
 	//Just check the source to figure it out.
 	
 	/**
-	 * Mandatory validate function with some useless description that don't mean anything.
+	 * Mandatory condition function with some useless description that don't mean anything.
 	 * Who takes the time to read comments, really?
 	 */
-	public function validate($value)
+	public function condition($value)
 	{
 		return MayanShaman::has_the_world_ended_yet(); // I really hope this returns true some day.
 
 		//Why doesn't PHP support question marks in identifiers?
 		//This apocalyptic function name would be sooooo much cooler, like it's asking a question LOL!
 	}
+
+	/**
+	 * Implement this virtual function if you want to extend other rules.
+	 * But... why would you do that? Code reuse is so overrated.
+	 */
+	public function extend()
+	{
+		//I don't feel like explaining it.
+	}
 }
 
-//WOW! That really looked like me using Ruby naming conventions in PHP :3
+//WOW! That really looked like trying to use Ruby naming conventions in PHP :3
 ```
 
 Your class must be discoverable by any registered autoloader (shame on you if you still use an old-(school/fashioned) out-of-date cheese-smelling `__autoload` function), and voilà! Now **YOU** figure out how to use it. Nah, just kidding, here it goes :
@@ -61,21 +71,8 @@ Phew!
 
 No really, this is a real and serious project! I will put some real documentation with real examples in the real Wiki when I really feel like it. Really? Yeah, really.
 
-### Features to come :
+### On its way :
 
  - More unit tests!
  - Autoloader so you don't have to require every file.
- - Allow a rule to extend other rules (not sure yet how it will work, but here is a brief preview) :
-
-```php
-class EmailRule
-{
-	public function validate($value) {
-		return $this->extends([
-			new RequiredRule(),
-			new MaxLengthRule(255),
-			new RegexRule('regex_for_email')
-		], $value);
-	}
-}
-```
+ - Register errors in the validator upon failed validation

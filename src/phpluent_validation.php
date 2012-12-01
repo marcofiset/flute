@@ -140,11 +140,22 @@ class NotNullRule extends Rule
 	}
 }
 
+class NotEmptyRule extends Rule
+{
+	public function condition($value) { 
+		return $value !== ''; 
+	}
+}
+
 class RequiredRule extends Rule
 {
-	public function condition($value)
-	{
-		return isset($value) && $value !== '';
+	public function condition($value) { return true; }
+	
+	public function extend() {
+		return [
+			new NotNullRule(),
+			new NotEmptyRule()
+		];
 	}
 }
 

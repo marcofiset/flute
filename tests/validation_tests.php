@@ -36,7 +36,7 @@ $tf->test('Parameter-less Rule', function($tf) {
 $tf->test('Rule for multiple fields', function($tf) {
 	$validator = new Validator();
 	$validator->rule_for('first_name')->and_for('last_name')
-			->required();
+			->not_empty();
 
 	$obj = new TestObject();
 	$obj->first_name = '';
@@ -58,6 +58,22 @@ $tf->test('Parameter rule', function($tf) {
 
 	$obj->name .= '0';
 	$tf->assertFalse($validator->validate($obj), 'Rule infringed');
+});
+
+$tf->test('Extending other rules', function($tf) {
+	$validator = new Validator();
+	$validator->rule_for('name')->required();
+
+	$obj = new TestObject();
+
+	$obj->name = '';
+	$tf->assertFalse($validator->validate($obj), 'Name is blank, invalid');
+
+	$obj->name = null;
+	$tf->assertFalse($validator->validate($obj), 'Name is null, invalid');
+
+	$obj->name = 'Not empty or null';
+	$tf->assert($validator->validate($obj), 'Name is not empty or null, valid');
 });
 
 $tf->run();

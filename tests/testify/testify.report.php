@@ -116,7 +116,7 @@
         	
         	li span.type{
         		display:inline-block;
-        		width:200px;
+        		width:600px;
         	}
         	
         	div.message{
