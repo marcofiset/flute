@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * The Validator class.
+ * 
+ * This class is used as a fluent interface to declare validation rules on specific 
+ * properties of objects. May be used directly for defining inline validation rules
+ * or it can be subclassed for better reusability.
+ */
 class Validator
 {
 	private $rules = [];
@@ -15,39 +22,43 @@ class Validator
 	 * @param string $prop is the name of the property on which the next rules will be applied.
 	 * @return $this in order to maintain the fluent interface.
 	 */
-	public function rule_for($prop)
-	{
+	public function rule_for($prop) {
 		$this->next_props = [];
 		$this->next_props[] = $prop;
+
 		return $this;
 	}
 
-	public function and_for($prop)
-	{
+	/**
+	 * Adds another property to the chain.
+	 * 
+	 * When invoked, all further rule declaration will be applied to $prop and every
+	 * other $prop defined since the last invoke to rule_for.
+	 * 
+	 * @param string $prop to be added to the list of properties on which to apply further rules
+	 * @return $this in order to maintain de fluent interface
+	 */
+	public function and_for($prop) {
 		$this->next_props[] = $prop;
+
 		return $this;
 	}
 
 	/**
 	 * Magic method that triggers every time an undefined method is called on this class
 	 * 
-	 * Creates a new rule following these conventions :
+	 * Creates a new rule based on these conventions :
 	 *   - For example, you call an undefined function on this object called max_length
 	 * 
 	 *   - This function creates a new rule from class MaxLengthRule
 	 * 
-	 *   - The rule class should use the Rule trait, or have a constructor which 
-	 *     takes two parameters : the property name and an array of arguments
-	 * 
-	 *   - The class must have a validate method that takes an object as a parameter 
-	 *     and returns a boolean, indicating wether the object is valid
+	 *   - The class must extend the Rule class and therefore implement any abstract method
 	 * 
 	 * @param string $name is the name of the function that was called
 	 * @param array $arguments is an array containing all the arguments that were passed to the function
 	 * @return $this in order to maintain the fluent interface.
 	 */
-	public function __call($name, $arguments)
-	{
+	public function __call($name, $arguments) {
 		// Transforms the function name to the corresponding Rule class
 		// like so : max_length => MaxLengthRule
 		$name = str_replace('_', ' ', $name);
@@ -88,53 +99,63 @@ class Validator
 }
 
 /**
- * This is a trait that represents a Rule. Provides a default constructor
- * with $prop and $args property. User defined rules should use this trait.
+ * The base class for all rules
+ *
+ * 
  */
-trait Rule
+abstract class Rule
 {
 	private $id;
-	private $args;
+	private $extended_rules;
+	protected $args;
 
-	public function __construct($arguments = [])
-	{
+	public function __construct($arguments = []) {
 		$this->args = $arguments;
 		$this->id = uniqid();
+		$this->extended_rules = $this->extend();
 	}
 
 	public function get_id() { return $this->id; }
+
+	public function validate($value) {
+		$result = true;
+
+		foreach ($this->extended_rules as $rule) {
+			$result &= $rule->condition($value);
+		}
+
+		return $result && $this->condition($value);
+	}
+
+	protected function extend() { return []; }
+
+	abstract protected function condition($value);
 }
 
-class NotNullRule
+class NotNullRule extends Rule
 {
-	use Rule;
-
-	public function validate($value)
+	public function condition($value)
 	{
 		return $value !== null;
 	}
 }
 
-class RequiredRule
+class RequiredRule extends Rule
 {
-	use Rule;
-
-	public function validate($value)
+	public function condition($value)
 	{
 		return isset($value) && $value !== '';
 	}
 }
 
-class MaxLengthRule
+class MaxLengthRule extends Rule
 {
-	use Rule;
-
 	private function max_length()
 	{
 		return $this->args[0];
 	}
 
-	public function validate($value)
+	public function condition($value)
 	{
 		return strlen($value) <= $this->max_length();
 	}

@@ -8,26 +8,14 @@ require '../src/phpluent_validation.php';
 
 class TestObject
 {
-	private $values = [];
-	
-	public function __get($name) {
-		return $this->values[$name];
-	}
-
 	public function __call($name, $args) {
-		return $this->__get($name);
-	}
-
-	public function __set($name, $value) {
-		$this->values[$name] = $value;
+		return $this->$name;
 	}
 }
 
-class AlwaysValidRule
+class AlwaysValidRule extends Rule
 {
-	use Rule;
-
-	public function validate($obj) {
+	public function condition($value) {
 		return true;
 	}
 }

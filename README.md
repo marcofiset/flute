@@ -57,7 +57,7 @@ This validator will check for function `dont_you_know_how_to_use_this_already()`
 
 Phew!
 
-# OK BRAIN FART IS OVER
+# OKAY BRAIN FART IS OVER
 
 No really, this is a real and serious project! I will put some real documentation with real examples in the real Wiki when I really feel like it. Really? Yeah, really.
 
@@ -65,16 +65,6 @@ No really, this is a real and serious project! I will put some real documentatio
 
  - More unit tests!
  - Autoloader so you don't have to require every file.
- - Refactoring to remove unnecessary `$prop` property inside each rule.
- - Support for the same ruleset for different properties defined like this :
-
-```php
-//This way, both first_name and last_name will have the required and the max_length rules
-$validator->rule_for('first_name')->and_for('last_name')
-          ->required()
-          ->max_length(100);
-```
-
  - Allow a rule to extend other rules (not sure yet how it will work, but here is a brief preview) :
 
 ```php
