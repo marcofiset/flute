@@ -12,7 +12,7 @@ These not-so-cool validation rules are supported out of the box :
  - NotEmpty 
  - Required (extends NotNull and NotEmpty)
  - MaxLength 
- - ... (Kind of boring, I know. More to come. OR WRITE SOME YOURSELF! PFFT! :japanese_goblin: (failed attempt at finding a furious guy in the emoji collection))
+ - ... (Kind of boring, I know. More to come. OR WRITE SOME YOURSELF! :japanese_goblin: (failed attempt at finding a furious guy in the emoji collection))
 
 It's a so tiny piece of delicious carrot cake to create custom rules that even your annoying sister's three-legged incapable kitty cat can do it eyes shut while itching its back :
 
@@ -33,7 +33,7 @@ class WorldShouldHaveEndedRule extends Rule //You must extend the Rule abstract 
 	 */
 	public function condition($value)
 	{
-		return MayanShaman::has_the_world_ended_yet(); // I really hope this returns true some day.
+		return MayanShaman::has_the_world_ended_yet(); // I really wish this returns true some day.
 
 		//Why doesn't PHP support question marks in identifiers?
 		//This apocalyptic function name would be sooooo much cooler, like it's asking a question LOL!
@@ -45,11 +45,9 @@ class WorldShouldHaveEndedRule extends Rule //You must extend the Rule abstract 
 	 */
 	public function extend()
 	{
-		//I don't feel like explaining it.
+		//I don't feel like explaining this.
 	}
 }
-
-//WOW! That really looked like trying to use Ruby naming conventions in PHP :3
 ```
 
 Your class must be discoverable by any registered autoloader (shame on you if you still use an old-(school/fashioned) out-of-date cheese-smelling `__autoload` function), and voilà! Now **YOU** figure out how to use it. Nah, just kidding, here it goes :
@@ -61,6 +59,8 @@ $v->rule_for("dont_you_know_how_to_use_this_already")->world_should_have_ended()
 $obj = new AnyKindOfObjectNoReallyAnyObjectWillDoYouDontEvenNeedToUseOrSubclassAnything();
 
 $v->validate($obj); // => false
+
+//WOW! That really looked like trying to use Ruby naming conventions in PHP :3
 ```
 
 This validator will check for function `dont_you_know_how_to_use_this_already()` on the target object and pass it through the rules defined for this particular function.
@@ -69,7 +69,7 @@ Phew!
 
 # OKAY BRAIN FART IS OVER
 
-No really, this is a real and serious project! I will put some real documentation with real examples in the real Wiki when I really feel like it. Really? Yeah, really.
+No really, this is a real and serious project! I will put some real documentation with real examples in the real Wiki when I really feel like it. Really? Yeah, really. For the moment you can look into the source code where I put a lot of comments explaining how the whole thing works.
 
 ### On its way :
 

@@ -49,13 +49,12 @@ class Validator
 	 * 
 	 * Creates a new rule based on these conventions :
 	 *   - For example, you call an undefined function on this object called max_length
-	 * 
 	 *   - This function creates a new rule from class MaxLengthRule
-	 * 
-	 *   - The class must extend the Rule class and therefore implement any abstract method
+	 *   - The class must extend the Rule class (see the Rule class documentation to see how to do this)
 	 * 
 	 * @param string $name is the name of the function that was called
 	 * @param array $arguments is an array containing all the arguments that were passed to the function
+	 * 
 	 * @return $this in order to maintain the fluent interface.
 	 */
 	public function __call($name, $arguments) {
@@ -101,35 +100,81 @@ class Validator
 /**
  * The base class for all rules
  *
- * 
+ * You must extend this class in order to define validation rules. You have 
+ * the choice to override any protected function. You want to override at
+ * least one of the protected function.
  */
 abstract class Rule
 {
 	private $id;
-	private $extended_rules;
 	protected $args;
 
+	/**
+	 * Constructor for Rule. 
+	 * 
+	 * You must not define a new constructor in the 
+	 * derived classes as it will not work. This is intended to be the only 
+	 * possible way to instantiate any rule.
+	 * 
+	 * @param array $arguments is the array containing the arguments that were
+	 * passed to the validator when invoking the rule.
+	 */
 	public function __construct($arguments = []) {
 		$this->args = $arguments;
+
+		//Assign a unique id to each rule so we can use it in a hash table
 		$this->id = uniqid();
-		$this->extended_rules = $this->extend();
 	}
 
+	/**
+	 * Gets the unique id of the rule.
+	 */
 	public function get_id() { return $this->id; }
 
+	/**
+	 * Validates a given value against the defined condition and every 
+	 * extended rules. If any of the condition is not respected, it returns false.
+	 * If all conditions are met, true is returned instead
+	 * 
+	 * @param mixed $value is the value we want to validate.
+	 * @return bool indicating wether the value was valid or not.
+	 */
 	public function validate($value) {
 		$result = true;
 
-		foreach ($this->extended_rules as $rule) {
+		//Loop through the extended rules to invoke their condition.
+		foreach ($this->extend() as $rule) {
 			$result &= $rule->condition($value);
 		}
 
 		return $result && $this->condition($value);
 	}
 
+	/**
+	 * Returns an array containing the rules we want to extend.
+	 * 
+	 * Override this function if you want your custom rule to inherit
+	 * the conditions of another rule. You must return an array containing
+	 * correctly instantiated rules. Each of the rules contained in the returned
+	 * array will be invoked when validating a value.
+	 * 
+	 * You do not have to override this function. It returns an empty array by default.
+	 * 
+	 * @return array of Rule containning the rules we want to extend.
+	 */
 	protected function extend() { return []; }
 
-	abstract protected function condition($value);
+	/**
+	 * Defines the condition for which a given value is valid.
+	 * 
+	 * You do not have to override this function if you want to only extend existing
+	 * rules. Otherwise, override it and define your own behaviour. If you
+	 * need any parameters to help you with the validation, they must be passed
+	 * in the constructor as an array of arguments.
+	 * 
+	 * @param mixed $value indicating wether the value was valid according to the defined rule.
+	 */
+	protected function condition($value) { return true; }
 }
 
 class NotNullRule extends Rule
@@ -149,8 +194,6 @@ class NotEmptyRule extends Rule
 
 class RequiredRule extends Rule
 {
-	public function condition($value) { return true; }
-	
 	public function extend() {
 		return [
 			new NotNullRule(),
