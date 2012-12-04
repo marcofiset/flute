@@ -4,7 +4,7 @@ ini_set('display_errors', '1');
 error_reporting(E_ALL);
 
 require 'testify/testify.class.php';
-require '../src/phpluent_validation.php';
+require '../src/flute.php';
 
 class TestObject
 {

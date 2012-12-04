@@ -1,78 +1,120 @@
-PHPluentValidation
-===================
+# Flute
 
-### An utterly awesome and easy-to-use highly-extensible lightweight fluent validation framework for PHP.
-*I really wish I could pack more adjectives into this description, but that's the best I was able to come up with*.
+### An utterly awesome and easy-to-use, lightweight and highly-extensible fluent validation framework for PHP.
 
-#### BEWARE! Maybe some velociraptor is lurking around the corner! My TDD-fu failed me while developping this project. Proceed with care through these untested realms.
+Flute's fluent interface is heavily inspired by [FluentValidation for .NET](https://github.com/JeremySkinner/FluentValidation).
 
-These not-so-cool validation rules are supported out of the box :
+Here is a simple example to get you started :
+
+```php
+require 'path/to/flute.php';
+
+$validator = new Validator();
+$validator->rule_for('first_name')->max_length(100);
+
+$p = new Person('John');
+
+if ($validator->validate($p)) {
+	echo 'Valid!';
+}
+```
+
+These validation rules are supported out of the box :
 
  - NotNull
  - NotEmpty 
- - Required (extends NotNull and NotEmpty)
+ - Required
  - MaxLength 
- - ... (Kind of boring, I know. More to come. OR WRITE SOME YOURSELF! :japanese_goblin: (failed attempt at finding a furious guy in the emoji collection))
+ - ... (Kind of boring, I know. More to come. Or you could just **write some yourself**!)
 
-It's a so tiny piece of delicious carrot cake to create custom rules that even your annoying sister's three-legged incapable kitty cat can do it eyes shut while itching its back :
+### Creating custom validation rules
+
+It's very easy to create custom rules, and you don't even have to alter the `Validator` class. Everything is done with magic naming conventions! For example, here is how the NotEmpty rule is built :
 
 ```php
-class WorldShouldHaveEndedRule extends Rule //You must extend the Rule abstract class.
+// The naming is very important here. More on that later.
+class NotEmptyRule extends Rule // We must extend the Rule abstract class
 {
-	//You must use the Rule trait. 
-	use Rule; 
-	
-	//Wasn't Rule supposed to be an abstract class?
-	//Hmmm... Thought it was a trait.
-	//Really, who gives a shit about this? 
-	//Just check the source to figure it out.
-	
-	/**
-	 * Mandatory condition function with some useless description that don't mean anything.
-	 * Who takes the time to read comments, really?
-	 */
+	//We override the condition function to run our own validation logic
 	public function condition($value)
 	{
-		return MayanShaman::has_the_world_ended_yet(); // I really wish this returns true some day.
-
-		//Why doesn't PHP support question marks in identifiers?
-		//This apocalyptic function name would be sooooo much cooler, like it's asking a question LOL!
-	}
-
-	/**
-	 * Implement this virtual function if you want to extend other rules.
-	 * But... why would you do that? Code reuse is so overrated.
-	 */
-	public function extend()
-	{
-		//I don't feel like explaining this.
+		// The $value variable contains the value we need to validate.
+		// For this particular case, it is considered valid if it is
+		// not equal to the empty string.
+		return $value !== '';
 	}
 }
 ```
 
-Your class must be discoverable by any registered autoloader (shame on you if you still use an old-(school/fashioned) out-of-date cheese-smelling `__autoload` function), and voilà! Now **YOU** figure out how to use it. Nah, just kidding, here it goes :
+Once your rule is defined, it must be discoverable by any registered auto-loader in order the make it available to the `Validator` class. Here is how you invoke it :
 
 ```php
+// Create an instance of the validator
 $v = new Validator();
-$v->rule_for("dont_you_know_how_to_use_this_already")->world_should_have_ended();
 
-$obj = new AnyKindOfObjectNoReallyAnyObjectWillDoYouDontEvenNeedToUseOrSubclassAnything();
-
-$v->validate($obj); // => false
-
-//WOW! That really looked like trying to use Ruby naming conventions in PHP :3
+$v->rule_for('first_name')->not_empty();
 ```
 
-This validator will check for function `dont_you_know_how_to_use_this_already()` on the target object and pass it through the rules defined for this particular function.
+See what I did there? No need to add the `not_empty()` function to the validator. Any unknown function invoked on a validator will create a rule named with the following conventions :
 
-Phew!
+ - Every word delimited by underscores is capitalized.
+ - The underscores are removed.
+ - 'Rule' is appended to the resulting string.
 
-# OKAY BRAIN FART IS OVER
+So `not_empty` becomes `NotEmptyRule`. The validator will instantiate a `NotEmptyRule` class and associate it with the property name defined when we called `rule_for`. Easy, huh?
 
-No really, this is a real and serious project! I will put some real documentation with real examples in the real Wiki when I really feel like it. Really? Yeah, really. For the moment you can look into the source code where I put a lot of comments explaining how the whole thing works.
+### What if I want to use parameters?
+
+Very simple indeed. Here is a brief look at the `MaxLengthRule` implementation.
+
+```php
+class MaxLengthRule extends Rule
+{
+	private function max_length()
+	{
+		return $this->args[0];
+	}
+
+	public function condition($value)
+	{
+		return strlen($value) <= $this->max_length();
+	}
+}
+
+$v = new Validator();
+$v->rule_for('first_name')->max_length(100);
+```
+
+Any parameters passed to the function definition will be registered in the `args` array *in the same order* that they were passed to the validator. In this case, I defined a private method called `max_length`to make things clearer, but this is obviously not required.
+
+### Extending existing rules
+
+Your custom rule can extend the behaviour of existing rules. Let's take a look at the `RequiredRule` implementation :
+
+```php
+class RequiredRule extends Rule
+{
+	public function extend() {
+		return [
+			new NotNullRule(),
+			new NotEmptyRule()
+		];
+	}
+}
+```
+
+As you can see, the `RequiredRule` is only a combination of the `NotNullRule` and the `NotEmptyRule`. The `extend` function returns an array of instantiated rules which you want to extend. The `condition` function will be called on both rules and combined with a logical `and`. That is, if any of the condition fails, it is considered invalid.
+
+That's it for the moment! Stay tuned for more awesome features!
 
 ### On its way :
 
  - More unit tests!
- - Autoloader so you don't have to require every file.
- - Register errors in the validator upon failed validation
+ - Composer support
+ - Register error messages in the validator upon failed validation
+ - Conditional conditions! (Run a rule only when some condition is met)
+
+
+### Known bugs :
+
+ - Multi-level rule extending not supported.

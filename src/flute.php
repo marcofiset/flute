@@ -160,7 +160,7 @@ abstract class Rule
 	 * 
 	 * You do not have to override this function. It returns an empty array by default.
 	 * 
-	 * @return array of Rule containning the rules we want to extend.
+	 * @return array of Rule containing the rules we want to extend.
 	 */
 	protected function extend() { return []; }
 
