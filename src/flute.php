@@ -144,7 +144,7 @@ abstract class Rule
 
 		//Loop through the extended rules to invoke their condition.
 		foreach ($this->extend() as $rule) {
-			$result &= $rule->condition($value);
+			$result &= $rule->validate($value);
 		}
 
 		return $result && $this->condition($value);
@@ -172,7 +172,8 @@ abstract class Rule
 	 * need any parameters to help you with the validation, they must be passed
 	 * in the constructor as an array of arguments.
 	 * 
-	 * @param mixed $value indicating wether the value was valid according to the defined rule.
+	 * @param mixed $value The value to validate
+	 * @return bool indicating wether the value was valid according to the defined rule.
 	 */
 	protected function condition($value) { return true; }
 }

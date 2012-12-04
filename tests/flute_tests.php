@@ -76,4 +76,22 @@ $tf->test('Extending other rules', function($tf) {
 	$tf->assert($validator->validate($obj), 'Name is not empty or null, valid');
 });
 
+class TempRule extends Rule
+{
+	public function extend() {
+		return [new RequiredRule()];
+	}
+}
+
+$tf->test('Multi-level rule hirearchy', function($tf) {
+	$validator = new Validator();
+	//TempRule extends required, which extends not null.
+	$validator->rule_for('age')->temp();
+
+	$obj = new TestObject();
+	$obj->age = null; 
+
+	$tf->assertFalse($validator->validate($obj), 'Null should not be valid');
+});
+
 $tf->run();
