@@ -85,7 +85,8 @@ class TempRule extends Rule
 
 $tf->test('Multi-level rule hirearchy', function($tf) {
 	$validator = new Validator();
-	//TempRule extends required, which extends not null.
+
+	//temp extends required, which extends not_null.
 	$validator->rule_for('age')->temp();
 
 	$obj = new TestObject();

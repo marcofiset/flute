@@ -109,12 +109,9 @@ That's it for the moment! Stay tuned for more awesome features!
 
 ### On its way :
 
- - More unit tests!
- - Composer support
- - Register error messages in the validator upon failed validation
- - Conditional conditions! (Run a rule only when some condition is met)
-
-
-### Known bugs :
-
- - Multi-level rule extending not supported.
+ - More unit tests for rules.
+ - Composer support.
+ - Register error messages in the validator upon failed validation.
+ - Conditional conditions! (Run a rule only when some condition is met).
+ - Allow to customize how extended rules are parsed, instead of evaluating them all together with a logical `and`.
+ - Magic functions for accessing args passed to the rule.

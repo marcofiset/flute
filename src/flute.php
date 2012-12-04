@@ -107,6 +107,7 @@ class Validator
 abstract class Rule
 {
 	private $id;
+	private $next_arg_index;
 	protected $args;
 
 	/**
@@ -120,6 +121,7 @@ abstract class Rule
 	 * passed to the validator when invoking the rule.
 	 */
 	public function __construct($arguments = []) {
+		$this->next_arg_index = 0;
 		$this->args = $arguments;
 
 		//Assign a unique id to each rule so we can use it in a hash table
@@ -176,12 +178,18 @@ abstract class Rule
 	 * @return bool indicating wether the value was valid according to the defined rule.
 	 */
 	protected function condition($value) { return true; }
+
+	/**
+	 * Gets the next argument from the $args array.
+	 */
+	protected function __get($name) {
+		return $this->args[$this->next_arg_index++];
+	}
 }
 
 class NotNullRule extends Rule
 {
-	public function condition($value)
-	{
+	public function condition($value) {
 		return $value !== null;
 	}
 }
@@ -203,15 +211,75 @@ class RequiredRule extends Rule
 	}
 }
 
+//class MinLengthRule extends Rule
+//{
+//	private function min_length() {
+//		return $this->args[0];
+//	}
+//
+//	public function condition($value) {
+//		return strlen($value) >= $this->min_length();
+//	}
+//}
+
 class MaxLengthRule extends Rule
 {
-	private function max_length()
-	{
+	private function max_length() {
 		return $this->args[0];
 	}
 
-	public function condition($value)
-	{
+	public function condition($value) {
 		return strlen($value) <= $this->max_length();
 	}
 }
+
+//class LengthRule extends Rule
+//{
+//	private function min_length() {
+//		return $this->args[0];
+//	}
+//
+//	private function max_length() {
+//		return $this->args[1];
+//	}
+//
+//	public function extend() {
+//		return [
+//			new MinLengthRule($this->min_length()),
+//			new MaxLengthRule($this->max_length())
+//		];
+//	}
+//}
+
+//class NotEqualToRule extends Rule
+//{
+//	public function value() {
+//		return $this->args[0];
+//	}
+//
+//	public function condition($value) {
+//		return $value !== $this->value();
+//	}
+//}
+//
+//class GreaterThanRule extends Rule
+//{
+//	public function value() {
+//		return $this->args[0];
+//	}
+//
+//	public function condition($value) {
+//		return $value > $this->value();
+//	}
+//}
+//
+//class LessThanRule extends Rule
+//{
+//	public function value() {
+//		return $this->args[0];
+//	}
+//
+//	public function condition($value) {
+//		return $value < $this->value();
+//	}
+//}
