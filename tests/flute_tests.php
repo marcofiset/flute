@@ -95,4 +95,6 @@ $tf->test('Multi-level rule hirearchy', function($tf) {
 	$tf->assertFalse($validator->validate($obj), 'Null should not be valid');
 });
 
+include 'rules_tests.php';
+
 $tf->run();
