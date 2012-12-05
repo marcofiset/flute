@@ -41,3 +41,29 @@ $tf->test('RequiredRule', function($tf) {
 	$obj->name = 'Valid';
 	$tf->assert($v->validate($obj), 'RequiredRule should succeed when not null or empty');
 });
+
+$tf->test('MinLengthRule', function($tf) {
+	$v = new Validator();
+	$v->rule_for('name')->min_length(6);
+
+	$obj = new TestObject();
+	$obj->name = 'Short';
+
+	$tf->assertFalse($v->validate($obj), 'MinLengthRule should fail when not long enough');
+
+	$obj->name = 'This is long enough';
+	$tf->assert($v->validate($obj), 'MinLengthRule should succeed when long enough.');
+});
+
+$tf->test('MaxLengthRule', function($tf) {
+	$v = new Validator();
+	$v->rule_for('name')->max_length(6);
+
+	$obj = new TestObject();
+	$obj->name = 'This is too long';
+
+	$tf->assertFalse($v->validate($obj), 'MaxLengthRule should fail when too long');
+
+	$obj->name = 'Valid';
+	$tf->assert($v->validate($obj), 'MaxLengthRule should succeed when not too long');
+});

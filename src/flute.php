@@ -142,6 +142,9 @@ abstract class Rule
 	 * @return bool indicating wether the value was valid or not.
 	 */
 	public function validate($value) {
+
+		//Reset the args index in case we validate multiple times.
+		$this->next_arg_index = 0;
 		$result = true;
 
 		//Loop through the extended rules to invoke their condition.
@@ -211,25 +214,17 @@ class RequiredRule extends Rule
 	}
 }
 
-//class MinLengthRule extends Rule
-//{
-//	private function min_length() {
-//		return $this->args[0];
-//	}
-//
-//	public function condition($value) {
-//		return strlen($value) >= $this->min_length();
-//	}
-//}
+class MinLengthRule extends Rule
+{
+	public function condition($value) {
+		return strlen($value) >= $this->min_length;
+	}
+}
 
 class MaxLengthRule extends Rule
 {
-	private function max_length() {
-		return $this->args[0];
-	}
-
 	public function condition($value) {
-		return strlen($value) <= $this->max_length();
+		return strlen($value) <= $this->max_length;
 	}
 }
 
