@@ -113,8 +113,3 @@ That's it for the moment! Stay tuned for more awesome features!
  - Composer support
  - Register error messages in the validator upon failed validation
  - Conditional conditions! (Run a rule only when some condition is met)
-
-
-### Known bugs :
-
- - Multi-level rule extending not supported.
