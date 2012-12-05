@@ -182,7 +182,7 @@ abstract class Rule
 	/**
 	 * Gets the next argument from the $args array.
 	 */
-	protected function __get($name) {
+	public function __get($name) {
 		return $this->args[$this->next_arg_index++];
 	}
 }
