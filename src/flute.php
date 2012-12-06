@@ -228,23 +228,15 @@ class MaxLengthRule extends Rule
 	}
 }
 
-//class LengthRule extends Rule
-//{
-//	private function min_length() {
-//		return $this->args[0];
-//	}
-//
-//	private function max_length() {
-//		return $this->args[1];
-//	}
-//
-//	public function extend() {
-//		return [
-//			new MinLengthRule($this->min_length()),
-//			new MaxLengthRule($this->max_length())
-//		];
-//	}
-//}
+class LengthRule extends Rule
+{
+	public function extend() {
+		return [
+			new MinLengthRule([$this->min_length]),
+			new MaxLengthRule([$this->max_length])
+		];
+	}
+}
 
 //class NotEqualToRule extends Rule
 //{

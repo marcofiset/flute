@@ -270,7 +270,7 @@ class Testify{
 		}
 		
 		$bt = debug_backtrace();
-		$source = $this->getFileLine($bt[1]['file'],$bt[1]['line']-1);
+		$source = $this->getFileLine($bt[1]['file'],$bt[1]['line']-2);
 		$bt[1]['file'] = basename($bt[1]['file']);
 		
 		$result = $pass ? "pass" : "fail";

@@ -20,7 +20,7 @@ class AlwaysValidRule extends Rule
 	}
 }
 
-$tf = new Testify('PHPluent Validation Tests');
+$tf = new Testify('Flute Tests');
 
 $tf->test('Parameter-less Rule', function($tf) {
 	$obj = new TestObject();
@@ -93,6 +93,14 @@ $tf->test('Multi-level rule hirearchy', function($tf) {
 	$obj->age = null; 
 
 	$tf->assertFalse($validator->validate($obj), 'Null should not be valid');
+});
+
+$tf->test('Rule with multiple args', function($tf) {
+	$rule = new TempRule([1, 3]);
+
+	$tf->assert($rule->arg1 === 1, 'First call to __get should return first arg');
+	
+	$tf->assert($rule->arg2 === 3, 'Second call to __get should return second arg');
 });
 
 include 'rules_tests.php';
