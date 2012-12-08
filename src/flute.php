@@ -9,9 +9,10 @@
  */
 class Validator
 {
+	private $next_props = [];
 	private $rules = [];
 	private $rules_props = [];
-	private $next_props = [];
+	private $rules_conditions = [];
 
 	/**
 	 * Start defining rules for a given property name.
@@ -73,6 +74,11 @@ class Validator
 		return $this;
 	}
 
+	public function when($condition) {
+		$last_rule_id = end($this->rules)->get_id();
+		$this->rules_conditions[$last_rule_id] = $condition;
+	}
+
 	/**
 	 * Indicates wether the object passed as a parameter is valid as defined by the rules.
 	 * 
@@ -86,6 +92,13 @@ class Validator
 	public function validate($obj) {	
 
 		foreach ($this->rules as $rule) {
+
+			$rule_id = $rule->get_id();
+			if (array_key_exists($rule_id, $this->rules_conditions)) {
+				$rule_condition = $this->rules_conditions[$rule_id];
+				if (!$rule_condition($obj)) continue;
+			}
+
 			//For each rule, we get the props associated with their id
 			//in the other array containing the props.
 			foreach ($this->rules_props[$rule->get_id()] as $prop) {

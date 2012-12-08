@@ -76,6 +76,16 @@ $tf->test('Extending other rules', function($tf) {
 	$tf->assert($validator->validate($obj), 'Name is not empty or null, valid');
 });
 
+$tf->test('Rule conditions', function($tf) {
+	$v = new Validator();
+	$v->rule_for('name')->required()->when(function($o) { return false; });
+
+	$obj = new TestObject();
+
+	$obj->name = null;
+	$tf->assert($v->validate($obj), 'Rule should not evaluate when condition is not met');
+});
+
 class TempRule extends Rule
 {
 	public function extend() {
