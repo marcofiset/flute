@@ -74,9 +74,22 @@ class Validator
 		return $this;
 	}
 
+	/**
+	 * Defines a condition for the last defined rule.
+	 * 
+	 * Before evaluating a rule, we will pass the object being validated to
+	 * the function received as a parameter which must return a boolean indicating
+	 * wether we should run this rule or not.
+	 * 
+	 * @param callback $condition is a function taking an object as a parameter which must return a boolean
+	 * @return $this in order to maintain the fluent interface
+	 */
 	public function when($condition) {
+		//Get the last added rule and associate it with the condition
 		$last_rule_id = end($this->rules)->get_id();
 		$this->rules_conditions[$last_rule_id] = $condition;
+
+		return $this;
 	}
 
 	/**
@@ -251,16 +264,17 @@ class LengthRule extends Rule
 	}
 }
 
-//class NotEqualToRule extends Rule
-//{
-//	public function value() {
-//		return $this->args[0];
-//	}
-//
-//	public function condition($value) {
-//		return $value !== $this->value();
-//	}
-//}
+class NotEqualToRule extends Rule
+{
+	public function value() {
+		return $this->args[0];
+	}
+
+	public function condition($value) {
+		return $value !== $this->value();
+	}
+}
+
 //
 //class GreaterThanRule extends Rule
 //{

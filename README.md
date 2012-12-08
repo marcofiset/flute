@@ -112,5 +112,4 @@ That's it for the moment! Stay tuned for more awesome features!
  - More rules!
  - Composer support.
  - Register error messages in the validator upon failed validation.
- - Conditional conditions! (Run a rule only when some condition is met).
  - Allow to customize how extended rules are parsed, instead of evaluating them all together with a logical `and`.

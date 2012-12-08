@@ -78,3 +78,15 @@ $tf->test('LengthRule', function ($tf) {
 	$obj->name = 'Just long enough';
 	$tf->assert($v->validate($obj), 'LengthRule should succeed when valid length');
 });
+
+$tf->test('NotEqualToRule', function($tf) {
+	$v = new Validator();
+	$v->rule_for('name')->not_equal_to('Smith');
+
+	$obj = new TestObject();
+	$obj->name = 'Smith';
+	$tf->assertFalse($v->validate($obj), 'NotEqualToRule should fail when equal');
+
+	$obj->name = 'Not Smith';
+	$tf->assert($v->validate($obj), 'NotEqualToRule should succeed when not equal');
+});
