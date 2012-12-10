@@ -90,3 +90,72 @@ $tf->test('NotEqualToRule', function($tf) {
 	$obj->name = 'Not Smith';
 	$tf->assert($v->validate($obj), 'NotEqualToRule should succeed when not equal');
 });
+
+$tf->test('NotEqualToRule Multiple values', function($tf) {
+	$v = new Validator();
+	$v->rule_for('name')->not_equal_to('Foo', 'Bar', 'Bazz');
+
+	$obj = new TestObject();
+	$obj->name = 'Foo';
+	$tf->assertFalse($v->validate($obj), 'NotEqualToRule should fail when equal to one of the values');
+
+	$obj->name = 'Bar';
+	$tf->assertFalse($v->validate($obj), 'NotEqualToRule should fail when equal to one of the values');
+
+	$obj->name = 'Bazz';
+	$tf->assertFalse($v->validate($obj), 'NotEqualToRule should fail when equal to one of the values');
+
+	$obj->name = 'Fizz';
+	$tf->assert($v->validate($obj), 'NotEqualToRule should succeed when not equal to any of the values');
+});
+
+$tf->test('GreaterThanRule', function($tf) {
+	$v = new Validator();
+	$v->rule_for('age')->greater_than(21);
+
+	$obj = new TestObject();
+	$obj->age = 18;
+	$tf->assertFalse($v->validate($obj), 'GreaterThanRule should fail when value is smaller');
+
+	$obj->age = 21;
+	$tf->assertFalse($v->validate($obj), 'GreaterThanRule should fail when value is equal');
+
+	$obj->age = 22;
+	$tf->assert($v->validate($obj), 'GreaterThanRule should succeed when value is greater');
+});
+
+$tf->test('LessThanRule', function($tf) {
+	$v = new Validator();
+	$v->rule_for('age')->less_than(65);
+
+	$obj = new TestObject();
+	$obj->age = 70;
+	$tf->assertFalse($v->validate($obj), 'LessThanRule should fail when value is greater');
+
+	$obj->age = 65;
+	$tf->assertFalse($v->validate($obj), 'LessThanRule should fail when value is equal');
+
+	$obj->age = 64;
+	$tf->assert($v->validate($obj), 'LessThanRule should succeed when value is lower');
+});
+
+$tf->test('ExclusiveBetweenRule', function($tf) {
+	$v = new Validator();
+	$v->rule_for('age')->exclusive_between(21, 65);
+
+	$obj = new TestObject();
+	$obj->age = 20;
+	$tf->assertFalse($v->validate($obj), 'ExclusiveBetweenRule should fail when value is lower');
+
+	$obj->age = 21;
+	$tf->assertFalse($v->validate($obj), 'ExclusiveBetweenRule should failt when value is equal to lower limit');
+
+	$obj->age = 35;
+	$tf->assert($v->validate($obj), 'ExclusiveBetweenRule should succeed when value is between limits');
+
+	$obj->age = 65;
+	$tf->assertFalse($v->validate($obj), 'ExclusiveBetweenRule should fail when value is equal to upper limit');
+
+	$obj->age = 66;
+	$tf->assertFalse($v->validate($obj), 'ExclusiveBetweenRule should fail when value is greater');
+});

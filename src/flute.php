@@ -168,12 +168,12 @@ abstract class Rule
 	 * @return bool indicating wether the value was valid or not.
 	 */
 	public function validate($value) {
-
 		//Reset the args index in case we validate multiple times.
 		$this->next_arg_index = 0;
+
 		$result = true;
 
-		//Loop through the extended rules to invoke their condition.
+		//Loop through the extended rules to invoke their validation.
 		foreach ($this->extend() as $rule) {
 			$result &= $rule->validate($value);
 		}
@@ -266,34 +266,31 @@ class LengthRule extends Rule
 
 class NotEqualToRule extends Rule
 {
-	public function value() {
-		return $this->args[0];
-	}
-
 	public function condition($value) {
-		return $value !== $this->value();
+		return !in_array($value, $this->args);
 	}
 }
 
-//
-//class GreaterThanRule extends Rule
-//{
-//	public function value() {
-//		return $this->args[0];
-//	}
-//
-//	public function condition($value) {
-//		return $value > $this->value();
-//	}
-//}
-//
-//class LessThanRule extends Rule
-//{
-//	public function value() {
-//		return $this->args[0];
-//	}
-//
-//	public function condition($value) {
-//		return $value < $this->value();
-//	}
-//}
+class GreaterThanRule extends Rule
+{
+	public function condition($value) {
+		return $value > $this->value;
+	}
+}
+
+class LessThanRule extends Rule
+{
+	public function condition($value) {
+		return $value < $this->value;
+	}
+}
+
+class ExclusiveBetweenRule extends Rule
+{
+	public function extend() {
+		return [
+			new GreaterThanRule([$this->min]),
+			new LessThanRule([$this->max])
+		];
+	}
+}
