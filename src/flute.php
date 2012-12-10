@@ -278,10 +278,24 @@ class GreaterThanRule extends Rule
 	}
 }
 
+class GreaterOrEqualRule extends Rule
+{
+	public function condition($value) {
+		return $value >= $this->min;
+	}
+}
+
 class LessThanRule extends Rule
 {
 	public function condition($value) {
 		return $value < $this->value;
+	}
+}
+
+class LessOrEqualRule extends Rule
+{
+	public function condition($value) {
+		return $value <= $this->max;
 	}
 }
 
@@ -291,6 +305,16 @@ class ExclusiveBetweenRule extends Rule
 		return [
 			new GreaterThanRule([$this->min]),
 			new LessThanRule([$this->max])
+		];
+	}
+}
+
+class BetweenRule extends Rule
+{
+	public function extend() {
+		return [
+			new GreaterOrEqualRule([$this->min]),
+			new LessOrEqualRule([$this->max])
 		];
 	}
 }
