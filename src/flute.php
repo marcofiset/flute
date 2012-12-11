@@ -135,6 +135,7 @@ abstract class Rule
 	private $id;
 	private $next_arg_index;
 	protected $args;
+	protected $named_args;
 
 	/**
 	 * Constructor for Rule. 
@@ -148,6 +149,7 @@ abstract class Rule
 	 */
 	public function __construct($arguments = []) {
 		$this->next_arg_index = 0;
+		$this->named_args = [];
 		$this->args = $arguments;
 
 		//Assign a unique id to each rule so we can use it in a hash table
@@ -210,9 +212,23 @@ abstract class Rule
 
 	/**
 	 * Gets the next argument from the $args array.
+	 * 
+	 * @param $name the name of the property we want to get
+	 * @return mixed The next item from the $args array, unless calling with the same name
 	 */
 	public function __get($name) {
-		return $this->args[$this->next_arg_index++];
+		//If we are reusing a name, we return the same value
+		if (array_key_exists($name, $this->named_args)) {
+			return $this->named_args[$name];
+		}
+
+		//Retrieves the next args and then increments the index for the next call.
+		$arg = $this->args[$this->next_arg_index++];
+
+		//Register the arg with the name used to call this function so we can reuse the same name
+		$this->named_args[$name] = $arg;
+
+		return $arg;
 	}
 }
 

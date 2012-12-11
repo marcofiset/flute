@@ -111,6 +111,8 @@ $tf->test('Rule with multiple args', function($tf) {
 	$tf->assert($rule->arg1 === 1, 'First call to __get should return first arg');
 	
 	$tf->assert($rule->arg2 === 3, 'Second call to __get should return second arg');
+
+	$tf->assert($rule->arg1 === 1, 'Calling same arg name should yield the same value');
 });
 
 include 'rules_tests.php';
