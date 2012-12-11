@@ -105,7 +105,7 @@ class Validator
 	public function validate($obj) {	
 
 		foreach ($this->rules as $rule) {
-
+			//Get the rule condition from the array if there is one
 			$rule_id = $rule->get_id();
 			if (array_key_exists($rule_id, $this->rules_conditions)) {
 				$rule_condition = $this->rules_conditions[$rule_id];
@@ -158,6 +158,8 @@ abstract class Rule
 
 	/**
 	 * Gets the unique id of the rule.
+	 * 
+	 * @return int The unique id of the rule.
 	 */
 	public function get_id() { return $this->id; }
 
@@ -177,7 +179,7 @@ abstract class Rule
 
 		//Loop through the extended rules to invoke their validation.
 		foreach ($this->extend() as $rule) {
-			$result &= $rule->validate($value);
+			$result = $result && $rule->validate($value);
 		}
 
 		return $result && $this->condition($value);
