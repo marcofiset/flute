@@ -25,7 +25,7 @@ These validation rules are supported out of the box :
  - NotEmpty 
  - Required
  - MaxLength 
- - ... (Kind of boring, I know. More to come. Or you could just **write some yourself**!)
+ - ... (and many more. You can also **add rules yourself**)
 
 ### Creating custom validation rules
 
@@ -106,10 +106,3 @@ class RequiredRule extends Rule
 As you can see, the `RequiredRule` is only a combination of the `NotNullRule` and the `NotEmptyRule`. The `extend` function returns an array of instantiated rules which you want to extend. The `condition` function will be called on both rules and combined with a logical `and`. That is, if any of the condition fails, it is considered invalid.
 
 That's it for the moment! Stay tuned for more awesome features!
-
-### On its way :
-
- - More rules!
- - Composer support.
- - Register error messages in the validator upon failed validation.
- - Allow to customize how extended rules are parsed, instead of evaluating them all together with a logical `and`.

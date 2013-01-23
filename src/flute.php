@@ -272,14 +272,31 @@ abstract class Rule
 	}
 }
 
+/**
+ * The class representing the validation results
+ * 
+ * This class is used as a return value from the validate function of the Validator
+ */ 
 class ValidationResult
 {
+	/**
+	 * This is public to be able to json_encode it.
+	 */ 
 	public $errors = array();
 
+	/**
+	 * @return bool indicating wether the validation was successful
+	 */ 
 	public function valid() {
 		return count($this->errors) === 0;
 	}
 
+	/**
+	 * Adds an error message for a specific property name
+	 * 
+	 * @param string $prop is the name of the property to add the error to
+	 * @param string $message is the error message
+	 */ 
 	public function addError($prop, $message) {
 		$this->errors[$prop] = $message;
 	}
