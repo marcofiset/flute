@@ -9,10 +9,11 @@
  */
 class Validator
 {
-	private $next_props = [];
-	private $rules = [];
-	private $rules_props = [];
-	private $rules_conditions = [];
+	private $next_props = array();
+	private $rules = array();
+	private $rules_props = array();
+	private $rules_conditions = array();
+	private $rules_messages = array();
 
 	/**
 	 * Start defining rules for a given property name.
@@ -24,7 +25,7 @@ class Validator
 	 * @return $this in order to maintain the fluent interface.
 	 */
 	public function rule_for($prop) {
-		$this->next_props = [];
+		$this->next_props = array();
 		$this->next_props[] = $prop;
 
 		return $this;
@@ -93,6 +94,22 @@ class Validator
 	}
 
 	/**
+	 * Defines the error message for the last defined rule.
+	 * 
+	 * If a rule is not respected, the message will be registered as an error
+	 * for the specific property.
+	 * 
+	 * @param string $message is the error message for the last rule
+	 * @return $this in order to maintain the fluent interface 
+	 */
+	public function with_message($message) {
+		$last_rule_id = end($this->rules)->get_id();
+		$this->rules_messages[$last_rule_id] = $message;
+
+		return $this;
+	}
+
+	/**
 	 * Indicates wether the object passed as a parameter is valid as defined by the rules.
 	 * 
 	 * Loops through the rules defined for this validator, calling the rule's validate method, 
@@ -104,22 +121,43 @@ class Validator
 	 */
 	public function validate($obj) {	
 
+		$results = new ValidationResult();
+
 		foreach ($this->rules as $rule) {
 			//Get the rule condition from the array if there is one
 			$rule_id = $rule->get_id();
+
+			//If a condition exists for the rule
 			if (array_key_exists($rule_id, $this->rules_conditions)) {
 				$rule_condition = $this->rules_conditions[$rule_id];
+
+				//Skip the rule if the condition is not
 				if (!$rule_condition($obj)) continue;
 			}
 
 			//For each rule, we get the props associated with their id
 			//in the other array containing the props.
-			foreach ($this->rules_props[$rule->get_id()] as $prop) {
-				if (!$rule->validate($obj->$prop())) return false;
+			foreach ($this->rules_props[$rule_id] as $prop) {
+				//Check if $prop is a method or property
+				if (method_exists($obj, $prop)) {
+					$value = $obj->$prop();
+				} else if (property_exists($obj, $prop)) {
+					$value = $obj->$prop;
+				}
+
+				if (!$rule->validate($value)) {
+					if (array_key_exists($rule_id, $this->rules_messages)) {
+						$error_message = $this->rules_messages[$rule_id];
+					} else {
+						$error_message = 'Field is invalid';
+					}
+
+					$results->addError($prop, $error_message);
+				}
 			}
 		}
 
-		return true;
+		return $results;
 	}
 }
 
@@ -147,9 +185,9 @@ abstract class Rule
 	 * @param array $arguments is the array containing the arguments that were
 	 * passed to the validator when invoking the rule.
 	 */
-	public function __construct($arguments = []) {
+	public function __construct($arguments = array()) {
 		$this->next_arg_index = 0;
-		$this->named_args = [];
+		$this->named_args = array();
 		$this->args = $arguments;
 
 		//Assign a unique id to each rule so we can use it in a hash table
@@ -197,7 +235,7 @@ abstract class Rule
 	 * 
 	 * @return array of Rule containing the rules we want to extend.
 	 */
-	protected function extend() { return []; }
+	protected function extend() { return array(); }
 
 	/**
 	 * Defines the condition for which a given value is valid.
@@ -234,6 +272,19 @@ abstract class Rule
 	}
 }
 
+class ValidationResult
+{
+	public $errors = array();
+
+	public function valid() {
+		return count($this->errors) === 0;
+	}
+
+	public function addError($prop, $message) {
+		$this->errors[$prop] = $message;
+	}
+}
+
 class NotNullRule extends Rule
 {
 	public function condition($value) {
@@ -251,10 +302,10 @@ class NotEmptyRule extends Rule
 class RequiredRule extends Rule
 {
 	public function extend() {
-		return [
+		return array(
 			new NotNullRule(),
 			new NotEmptyRule()
-		];
+		);
 	}
 }
 
@@ -275,10 +326,10 @@ class MaxLengthRule extends Rule
 class LengthRule extends Rule
 {
 	public function extend() {
-		return [
-			new MinLengthRule([$this->min_length]),
-			new MaxLengthRule([$this->max_length])
-		];
+		return array(
+			new MinLengthRule(array($this->min_length)),
+			new MaxLengthRule(array($this->max_length))
+		);
 	}
 }
 
@@ -320,19 +371,19 @@ class LessOrEqualRule extends Rule
 class ExclusiveBetweenRule extends Rule
 {
 	public function extend() {
-		return [
-			new GreaterThanRule([$this->min]),
-			new LessThanRule([$this->max])
-		];
+		return array(
+			new GreaterThanRule(array($this->min)),
+			new LessThanRule(array($this->max))
+		);
 	}
 }
 
 class BetweenRule extends Rule
 {
 	public function extend() {
-		return [
-			new GreaterOrEqualRule([$this->min]),
-			new LessOrEqualRule([$this->max])
-		];
+		return array(
+			new GreaterOrEqualRule(array($this->min)),
+			new LessOrEqualRule(array($this->max))
+		);
 	}
 }

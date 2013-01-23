@@ -30,7 +30,7 @@ $tf->test('Parameter-less Rule', function($tf) {
 	$validator->rule_for('name')->always_valid();
 
 	$result = $validator->validate($obj);	
-	$tf->assert($result, 'Object should be valid');
+	$tf->assert($result->valid(), 'Object should be valid');
 });
 
 $tf->test('Rule for multiple fields', function($tf) {
@@ -42,10 +42,10 @@ $tf->test('Rule for multiple fields', function($tf) {
 	$obj->first_name = '';
 	$obj->last_name = 'Valid name';
 
-	$tf->assertFalse($validator->validate($obj), 'One property is invalid');
+	$tf->assertFalse($validator->validate($obj)->valid(), 'One property is invalid');
 
 	$obj->first_name = 'Valid name';
-	$tf->assert($validator->validate($obj), 'All properties are valid.');
+	$tf->assert($validator->validate($obj)->valid(), 'All properties are valid.');
 });
 
 $tf->test('Parameter rule', function($tf) {
@@ -54,10 +54,10 @@ $tf->test('Parameter rule', function($tf) {
 
 	$obj = new TestObject();
 	$obj->name = '0123456789';
-	$tf->assert($validator->validate($obj), 'Rule respected');
+	$tf->assert($validator->validate($obj)->valid(), 'Rule respected');
 
 	$obj->name .= '0';
-	$tf->assertFalse($validator->validate($obj), 'Rule infringed');
+	$tf->assertFalse($validator->validate($obj)->valid(), 'Rule infringed');
 });
 
 $tf->test('Extending other rules', function($tf) {
@@ -67,13 +67,13 @@ $tf->test('Extending other rules', function($tf) {
 	$obj = new TestObject();
 
 	$obj->name = '';
-	$tf->assertFalse($validator->validate($obj), 'Name is blank, invalid');
+	$tf->assertFalse($validator->validate($obj)->valid(), 'Name is blank, invalid');
 
 	$obj->name = null;
-	$tf->assertFalse($validator->validate($obj), 'Name is null, invalid');
+	$tf->assertFalse($validator->validate($obj)->valid(), 'Name is null, invalid');
 
 	$obj->name = 'Not empty or null';
-	$tf->assert($validator->validate($obj), 'Name is not empty or null, valid');
+	$tf->assert($validator->validate($obj)->valid(), 'Name is not empty or null, valid');
 });
 
 $tf->test('Rule conditions', function($tf) {
@@ -83,7 +83,7 @@ $tf->test('Rule conditions', function($tf) {
 	$obj = new TestObject();
 
 	$obj->name = null;
-	$tf->assert($v->validate($obj), 'Rule should not evaluate when condition is not met');
+	$tf->assert($v->validate($obj)->valid(), 'Rule should not evaluate when condition is not met');
 });
 
 class TempRule extends Rule
@@ -102,7 +102,7 @@ $tf->test('Multi-level rule hirearchy', function($tf) {
 	$obj = new TestObject();
 	$obj->age = null; 
 
-	$tf->assertFalse($validator->validate($obj), 'Null should not be valid');
+	$tf->assertFalse($validator->validate($obj)->valid(), 'Null should not be valid');
 });
 
 $tf->test('Rule with multiple args', function($tf) {
