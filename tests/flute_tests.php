@@ -20,7 +20,7 @@ class AlwaysValidRule extends Rule
 	}
 }
 
-$tf = new Testify('PHPluent Validation Tests');
+$tf = new Testify('Flute Tests');
 
 $tf->test('Parameter-less Rule', function($tf) {
 	$obj = new TestObject();
@@ -30,22 +30,21 @@ $tf->test('Parameter-less Rule', function($tf) {
 	$validator->rule_for('name')->always_valid();
 
 	$result = $validator->validate($obj);	
-	$tf->assert($result, 'Object should be valid');
+	$tf->assert($result->valid(), 'Object should be valid');
 });
 
 $tf->test('Rule for multiple fields', function($tf) {
 	$validator = new Validator();
-	$validator->rule_for('first_name')->and_for('last_name')
-			->not_empty();
+	$validator->rule_for('first_name')->and_for('last_name')->not_empty();
 
 	$obj = new TestObject();
 	$obj->first_name = '';
 	$obj->last_name = 'Valid name';
 
-	$tf->assertFalse($validator->validate($obj), 'One property is invalid');
+	$tf->assertFalse($validator->validate($obj)->valid(), 'One property is invalid');
 
 	$obj->first_name = 'Valid name';
-	$tf->assert($validator->validate($obj), 'All properties are valid.');
+	$tf->assert($validator->validate($obj)->valid(), 'All properties are valid.');
 });
 
 $tf->test('Parameter rule', function($tf) {
@@ -54,10 +53,10 @@ $tf->test('Parameter rule', function($tf) {
 
 	$obj = new TestObject();
 	$obj->name = '0123456789';
-	$tf->assert($validator->validate($obj), 'Rule respected');
+	$tf->assert($validator->validate($obj)->valid(), 'Rule respected');
 
 	$obj->name .= '0';
-	$tf->assertFalse($validator->validate($obj), 'Rule infringed');
+	$tf->assertFalse($validator->validate($obj)->valid(), 'Rule infringed');
 });
 
 $tf->test('Extending other rules', function($tf) {
@@ -67,31 +66,81 @@ $tf->test('Extending other rules', function($tf) {
 	$obj = new TestObject();
 
 	$obj->name = '';
-	$tf->assertFalse($validator->validate($obj), 'Name is blank, invalid');
+	$tf->assertFalse($validator->validate($obj)->valid(), 'Name is blank, invalid');
 
 	$obj->name = null;
-	$tf->assertFalse($validator->validate($obj), 'Name is null, invalid');
+	$tf->assertFalse($validator->validate($obj)->valid(), 'Name is null, invalid');
 
 	$obj->name = 'Not empty or null';
-	$tf->assert($validator->validate($obj), 'Name is not empty or null, valid');
+	$tf->assert($validator->validate($obj)->valid(), 'Name is not empty or null, valid');
+});
+
+$tf->test('Rule conditions', function($tf) {
+	$v = new Validator();
+	$v->rule_for('name')->required()->when(function($o) { return false; });
+
+	$obj = new TestObject();
+
+	$obj->name = null;
+	$tf->assert($v->validate($obj)->valid(), 'Rule should not evaluate when condition is not met');
 });
 
 class TempRule extends Rule
 {
 	public function extend() {
-		return [new RequiredRule()];
+		return array(new RequiredRule());
 	}
 }
 
 $tf->test('Multi-level rule hirearchy', function($tf) {
 	$validator = new Validator();
-	//TempRule extends required, which extends not null.
+
+	//temp extends required, which extends not_null.
 	$validator->rule_for('age')->temp();
 
 	$obj = new TestObject();
 	$obj->age = null; 
 
-	$tf->assertFalse($validator->validate($obj), 'Null should not be valid');
+	$tf->assertFalse($validator->validate($obj)->valid(), 'Null should not be valid');
 });
+
+$tf->test('Rule with multiple args', function($tf) {
+	$rule = new TempRule(array(1, 3));
+
+	$tf->assert($rule->arg1 === 1, 'First call to __get should return first arg');
+	
+	$tf->assert($rule->arg2 === 3, 'Second call to __get should return second arg');
+
+	$tf->assert($rule->arg1 === 1, 'Calling same arg name should yield the same value');
+});
+
+$tf->test('Error messages for failed validations', function($tf) {
+	$v = new Validator();
+	$v->rule_for('name')->required()->with_message('Name is required');
+
+	$obj = new TestObject();
+	$obj->name = '';
+
+	$result = $v->validate($obj);
+
+	$tf->assert(array_key_exists('name', $result->errors), "name should have an error");
+});
+
+$tf->test('Error messages are registered correctly for multi-property rules', function($tf) {
+	$v = new Validator();
+	$v->rule_for('first_name')->and_for('last_name')->required()->with_message('Required');
+
+	$obj = new TestObject();
+	$obj->first_name = '';
+	$obj->last_name = '';
+
+	$result = $v->validate($obj);
+
+	$tf->assert(array_key_exists('first_name', $result->errors), "first_name should have an error");
+
+	$tf->assert(array_key_exists('last_name', $result->errors), "last_name should also have an error");
+});
+
+include 'rules_tests.php';
 
 $tf->run();
