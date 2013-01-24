@@ -35,8 +35,7 @@ $tf->test('Parameter-less Rule', function($tf) {
 
 $tf->test('Rule for multiple fields', function($tf) {
 	$validator = new Validator();
-	$validator->rule_for('first_name')->and_for('last_name')
-			->not_empty();
+	$validator->rule_for('first_name')->and_for('last_name')->not_empty();
 
 	$obj = new TestObject();
 	$obj->first_name = '';
@@ -89,7 +88,7 @@ $tf->test('Rule conditions', function($tf) {
 class TempRule extends Rule
 {
 	public function extend() {
-		return [new RequiredRule()];
+		return array(new RequiredRule());
 	}
 }
 
@@ -106,13 +105,40 @@ $tf->test('Multi-level rule hirearchy', function($tf) {
 });
 
 $tf->test('Rule with multiple args', function($tf) {
-	$rule = new TempRule([1, 3]);
+	$rule = new TempRule(array(1, 3));
 
 	$tf->assert($rule->arg1 === 1, 'First call to __get should return first arg');
 	
 	$tf->assert($rule->arg2 === 3, 'Second call to __get should return second arg');
 
 	$tf->assert($rule->arg1 === 1, 'Calling same arg name should yield the same value');
+});
+
+$tf->test('Error messages for failed validations', function($tf) {
+	$v = new Validator();
+	$v->rule_for('name')->required()->with_message('Name is required');
+
+	$obj = new TestObject();
+	$obj->name = '';
+
+	$result = $v->validate($obj);
+
+	$tf->assert(array_key_exists('name', $result->errors), "name should have an error");
+});
+
+$tf->test('Error messages are registered correctly for multi-property rules', function($tf) {
+	$v = new Validator();
+	$v->rule_for('first_name')->and_for('last_name')->required()->with_message('Required');
+
+	$obj = new TestObject();
+	$obj->first_name = '';
+	$obj->last_name = '';
+
+	$result = $v->validate($obj);
+
+	$tf->assert(array_key_exists('first_name', $result->errors), "first_name should have an error");
+
+	$tf->assert(array_key_exists('last_name', $result->errors), "last_name should also have an error");
 });
 
 include 'rules_tests.php';
