@@ -217,10 +217,10 @@ abstract class Rule
 
 		//Loop through the extended rules to invoke their validation.
 		foreach ($this->extend() as $rule) {
-			$result = $result && $rule->validate($value);
+			$result = $result & $rule->validate($value);
 		}
 
-		return $result && $this->condition($value);
+		return $result & $this->condition($value);
 	}
 
 	/**
