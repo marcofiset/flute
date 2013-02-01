@@ -13,8 +13,9 @@ $validator = new Validator();
 $validator->rule_for('first_name')->max_length(100);
 
 $p = new Person('John');
+$result = $validator->validate($p);
 
-if ($validator->validate($p)) {
+if ($result->valid()) {
 	echo 'Valid!';
 }
 ```
@@ -65,19 +66,15 @@ So `not_empty` becomes `NotEmptyRule`. The validator will instantiate a `NotEmpt
 
 ### What if I want to use parameters?
 
-Very simple indeed. Here is a brief look at the `MaxLengthRule` implementation.
+Very simple. Here is a brief look at the `MaxLengthRule` implementation.
 
 ```php
 class MaxLengthRule extends Rule
 {
-	private function max_length()
-	{
-		return $this->args[0];
-	}
-
 	public function condition($value)
 	{
-		return strlen($value) <= $this->max_length();
+		return strlen($value) <= $this->max_length;
+		//W-w-w-wait, what!? Where does max_length come from?
 	}
 }
 
@@ -85,7 +82,7 @@ $v = new Validator();
 $v->rule_for('first_name')->max_length(100);
 ```
 
-Any parameters passed to the function definition will be registered in the `args` array *in the same order* that they were passed to the validator. In this case, I defined a private method called `max_length`to make things clearer, but this is obviously not required.
+Any parameters passed to the function definition will be registered in the `args` array *in the same order* that they were passed to the validator rule. You can also access args with the magic `__get` method, like I did here with `max_length`. I you were to call `max_length` again, it will send back the same value as the first time it was called. When using multiple arguments, they are handed out in the order they were passed, and each name gets its own argument.
 
 ### Extending existing rules
 
@@ -95,10 +92,10 @@ Your custom rule can extend the behaviour of existing rules. Let's take a look a
 class RequiredRule extends Rule
 {
 	public function extend() {
-		return [
+		return array(
 			new NotNullRule(),
 			new NotEmptyRule()
-		];
+		);
 	}
 }
 ```
