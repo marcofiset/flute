@@ -1,20 +1,20 @@
 {
-	"name": "marco-fiset/flute",
-	"type": "library",
+  "name": "marco-fiset/flute",
+  "type": "library",
   "description": "Highly extensible validation framework for PHP",
   "keywords": ["validation", "fluent", "extensible"],
   "homepage": "http://github.com/marco-fiset/flute",
   "license": "DBAD",
   "authors": [
-      {
-          "name": "Marc-Olivier Fiset",
-          "email": "marco.fiset@gmail.com"
-      }
+    {
+      "name": "Marc-Olivier Fiset",
+      "email": "marco.fiset@gmail.com"
+    }
   ],
-	"require": {
-		"php": ">=5.3.0"
-	},
-	"autoload": {
-  	"classmap": ["src/flute.php"]
+  "require": {
+    "php": ">=5.3.0"
+  },
+  "autoload": {
+    "classmap": ["src/flute.php"]
   }
 }
