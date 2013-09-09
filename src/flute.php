@@ -131,7 +131,7 @@ class Validator
 			if (array_key_exists($rule_id, $this->rules_conditions)) {
 				$rule_condition = $this->rules_conditions[$rule_id];
 
-				//Skip the rule if the condition is not
+				//Skip the rule if the condition is not met
 				if (!$rule_condition($obj)) continue;
 			}
 
@@ -217,10 +217,10 @@ abstract class Rule
 
 		//Loop through the extended rules to invoke their validation.
 		foreach ($this->extend() as $rule) {
-			$result = $result && $rule->validate($value);
+			$result = $result & $rule->validate($value);
 		}
 
-		return $result && $this->condition($value);
+		return $result & $this->condition($value);
 	}
 
 	/**
